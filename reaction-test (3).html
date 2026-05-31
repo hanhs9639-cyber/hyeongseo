@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>반응속도형 테스트</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/galmuri/dist/galmuri.css" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --eng: 'Press Start 2P', monospace;
+  --kor: 'Galmuri11', 'Press Start 2P', monospace;
+  --bg:   #0b0f1e;
+  --surf: #131828;
+  --deep: #0e1322;
+  --bd:   #1e2d52;
+  --blue: #4c6ef5;
+  --blu2: #2340c0;
+  --grn:  #22c55e;
+  --grn2: #15803d;
+  --yel:  #f5d600;
+  --yel2: #8a7000;
+  --text: #e8edf8;
+  --dim:  #4a6acc;
+  --sky:  #93c5fd;
+}
+body {
+  font-family: var(--kor);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+#app { width: 100%; max-width: 480px; }
+
+/* CARD */
+.card {
+  background: var(--surf);
+  border: 2px solid var(--bd);
+  padding: 28px 24px 34px;
+  box-shadow: 4px 4px 0 #060810;
+}
+
+/* INTRO */
+.section-lbl { font-family: var(--eng); font-size: 9px; color: var(--yel); letter-spacing: 0.12em; margin-bottom: 8px; }
+.card-title   { font-family: var(--kor); font-size: 22px; font-weight: 700; color: var(--text); text-shadow: 3px 3px 0 #060810; line-height: 1.7; margin-bottom: 8px; }
+.card-sub     { font-family: var(--kor); font-size: 14px; color: var(--sky); margin-bottom: 22px; line-height: 1.9; }
+
+.info-table { border: 2px solid var(--bd); margin-bottom: 18px; }
+.info-row   { display: flex; gap: 10px; padding: 10px 14px; border-bottom: 2px solid var(--bd); }
+.info-row:last-child { border-bottom: none; }
+.ik { font-family: var(--kor); font-size: 13px; color: var(--dim); width: 36px; flex-shrink: 0; line-height: 1.8; }
+.iv { font-family: var(--kor); font-size: 13px; color: #c8d0f0; line-height: 1.8; }
+
+.guide-box  { background: var(--deep); border: 2px solid var(--bd); padding: 14px 16px; margin-bottom: 20px; }
+.guide-ttl  { font-family: var(--kor); font-size: 13px; color: var(--yel); margin-bottom: 12px; }
+.guide-row  { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid #1a2240; }
+.guide-row:last-child { border-bottom: none; }
+.g-name { font-family: var(--kor); font-size: 13px; color: var(--sky); }
+.g-pt   { font-family: var(--eng); font-size: 10px; color: var(--text); }
+
+/* BUTTONS */
+.btn-main {
+  display: block; width: 100%;
+  background: var(--blue); color: #fff;
+  font-family: var(--eng); font-size: 11px; text-align: center;
+  padding: 16px 0; border: none;
+  box-shadow: 0 5px 0 var(--blu2), 3px 3px 0 var(--blu2);
+  cursor: pointer; letter-spacing: 0.1em;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.btn-main:active { transform: translate(3px,5px); box-shadow: none; }
+.btn-sub {
+  display: block; width: 100%;
+  background: transparent; color: var(--sky);
+  font-family: var(--kor); font-size: 14px; text-align: center;
+  padding: 13px 0; border: 2px solid var(--bd);
+  box-shadow: 0 4px 0 #0a0d18, 3px 3px 0 #0a0d18;
+  cursor: pointer; margin-top: 10px;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.btn-sub:active { transform: translate(3px,4px); box-shadow: none; }
+
+/* TIMER */
+.timer-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.t-lbl { font-family: var(--eng); font-size: 9px; color: var(--dim); }
+.t-val { font-family: var(--eng); font-size: 18px; color: var(--yel); text-shadow: 2px 2px 0 var(--yel2); }
+.t-track { height: 10px; background: var(--deep); border: 2px solid var(--bd); margin-bottom: 22px; overflow: hidden; }
+.t-fill  { height: 100%; background: var(--blue); transition: width 0.1s linear; }
+.t-fill.warn   { background: #f59e0b; }
+.t-fill.danger { background: #ef4444; }
+
+/* PROMPT */
+.prompt-wrap { text-align: center; margin-bottom: 22px; }
+.prompt-color { font-family: var(--kor); font-size: 28px; font-weight: 700; display: block; margin-bottom: 6px; line-height: 1.5; }
+.prompt-guide { font-family: var(--kor); font-size: 14px; color: var(--sky); }
+
+/* DOT GRID */
+.dot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; max-width: 310px; margin: 0 auto 18px; }
+.dot-cell { display: flex; justify-content: center; cursor: pointer; }
+canvas.pc { image-rendering: pixelated; display: block; transition: transform 0.1s; }
+canvas.pc:hover { transform: scale(1.08); }
+canvas.pc:active { transform: scale(0.92); }
+@keyframes correctPop { 0%{transform:scale(1)} 50%{transform:scale(1.22)} 100%{transform:scale(1)} }
+@keyframes wrongShake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-7px)} 40%{transform:translateX(7px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
+.correct-flash { animation: correctPop 0.28s ease; }
+.wrong-shake   { animation: wrongShake 0.32s ease; }
+
+/* LIVE STATS */
+.live-row { display: flex; justify-content: space-around; border-top: 2px solid var(--bd); padding-top: 16px; }
+.live-item { text-align: center; }
+.live-lbl { font-family: var(--kor); font-size: 12px; color: var(--dim); margin-bottom: 7px; }
+.live-val { font-family: var(--eng); font-size: 20px; color: var(--text); }
+
+/* TOAST */
+.toast {
+  position: fixed; top: 24px; left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  font-family: var(--eng); font-size: 10px;
+  padding: 10px 20px; border: 2px solid;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.15s, transform 0.15s; z-index: 999;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.ok  { background: #052e16; color: #4ade80; border-color: #166534; }
+.toast.ng  { background: #2d0a0a; color: #f87171; border-color: #7f1d1d; }
+
+/* RESULT */
+.r-tag {
+  display: inline-block; background: var(--blue); color: #fff;
+  font-family: var(--eng); font-size: 10px; padding: 7px 18px;
+  box-shadow: 0 3px 0 var(--blu2), 2px 2px 0 var(--blu2);
+  margin-bottom: 12px; letter-spacing: 0.12em;
+}
+.r-score-lbl { font-family: var(--eng); font-size: 9px; color: var(--dim); letter-spacing: 0.14em; margin-bottom: 6px; }
+.r-score {
+  font-family: var(--eng); font-size: 60px; color: var(--grn);
+  text-shadow: 4px 4px 0 var(--grn2), 7px 7px 0 #060810;
+  line-height: 1; margin-bottom: 10px;
+}
+.r-grade { font-family: var(--kor); font-size: 16px; margin-bottom: 4px; line-height: 1.8; }
+.r-sub   { font-family: var(--kor); font-size: 13px; color: var(--dim); margin-bottom: 22px; }
+
+.detail-box { background: var(--deep); border: 2px solid var(--bd); padding: 14px; margin-bottom: 12px; }
+.detail-ttl { font-family: var(--kor); font-size: 13px; color: var(--dim); text-align: center; margin-bottom: 14px; }
+.bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.bar-row:last-child { margin-bottom: 0; }
+.bar-lbl  { font-family: var(--kor); font-size: 13px; color: var(--sky); width: 52px; flex-shrink: 0; }
+.bar-track { flex: 1; height: 13px; background: #1a2240; border: 2px solid var(--bd); overflow: hidden; image-rendering: pixelated; }
+.bar-fill  { height: 100%; transition: width 0.8s cubic-bezier(.22,1,.36,1); }
+.bar-score { font-family: var(--eng); font-size: 9px; color: var(--text); width: 38px; text-align: right; flex-shrink: 0; }
+
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+.m-box   { background: var(--deep); border: 2px solid var(--bd); padding: 12px 6px; text-align: center; }
+.m-lbl   { font-family: var(--kor); font-size: 11px; color: var(--dim); margin-bottom: 8px; line-height: 1.8; }
+.m-val   { font-family: var(--eng); font-size: 14px; color: var(--yel); text-shadow: 1px 1px 0 var(--yel2); }
+.m-unit  { font-family: var(--kor); font-size: 11px; color: var(--dim); }
+
+.best-row {
+  background: var(--deep); border: 2px solid var(--bd);
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 13px 16px; margin-bottom: 18px;
+}
+.best-lbl { font-family: var(--kor); font-size: 13px; color: var(--dim); }
+.best-val { font-family: var(--eng); font-size: 14px; color: var(--grn); text-shadow: 1px 1px 0 var(--grn2); }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast" class="toast"></div>
+
+<script>
+const COLORS = [
+  { name:'빨간색', main:'#e53e3e', dark:'#7a0000', light:'#ff8080' },
+  { name:'파란색', main:'#3b82f6', dark:'#1d4ed8', light:'#93c5fd' },
+  { name:'초록색', main:'#22c55e', dark:'#15803d', light:'#86efac' },
+  { name:'보라색', main:'#a855f7', dark:'#6b21a8', light:'#d8b4fe' },
+  { name:'노란색', main:'#f5d600', dark:'#8a7000', light:'#fef08a' },
+  { name:'하늘색', main:'#38bdf8', dark:'#0369a1', light:'#bae6fd' },
+  { name:'회색',   main:'#94a3b8', dark:'#334155', light:'#cbd5e1' },
+  { name:'분홍색', main:'#ec4899', dark:'#9d174d', light:'#f9a8d4' },
+  { name:'주황색', main:'#f97316', dark:'#c2410c', light:'#fdba74' },
+  { name:'남색',   main:'#4f46e5', dark:'#1e1b4b', light:'#818cf8' },
+  { name:'연두색', main:'#84cc16', dark:'#3f6212', light:'#bef264' },
+  { name:'갈색',   main:'#b45309', dark:'#451a03', light:'#fbbf24' },
+];
+
+let state = 'intro', timeLeft = 60, timerInterval = null;
+let roundStart = 0, reactionTimes = [], errors = 0, totalClicks = 0;
+let currentTarget = null, dotColors = [];
+
+const app  = document.getElementById('app');
+const toast = document.getElementById('toast');
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i>0; i--) { const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function showToast(type) {
+  toast.textContent = type==='ok' ? '✓ 정답!' : '✗ 오답';
+  toast.className = 'toast show '+type;
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { toast.className='toast'; }, 700);
+}
+function formatTime(s) {
+  const m=Math.floor(s/60), sec=Math.floor(s%60);
+  return '0'+m+':'+(sec<10?'0':'')+sec;
+}
+function calcScore(avg, errorRate, correct) {
+  const speedScore = Math.max(0, Math.min(40, Math.round(40*(2000-avg)/1500)));
+  const accScore   = Math.max(0, Math.min(40, Math.round(40*(1-errorRate/50))));
+  const countScore = Math.max(0, Math.min(20, Math.round(20*(correct-2)/8)));
+  return { speedScore, accScore, countScore, total: speedScore+accScore+countScore };
+}
+function gradeInfo(total) {
+  if (total>=90) return { label:'★ S RANK — 반응의 신! ★', color:'#f5d600' };
+  if (total>=75) return { label:'★ A RANK — 매우 우수 ★',  color:'#4ade80' };
+  if (total>=60) return { label:'★ B RANK — 우수 ★',       color:'#60a5fa' };
+  if (total>=40) return { label:'★ C RANK — 보통 ★',       color:'#94a3b8' };
+  return               { label:'★ D RANK — 분발 필요 ★',   color:'#f87171' };
+}
+
+function drawDot(canvas, c) {
+  const SZ=76, PX=9;
+  canvas.width=SZ; canvas.height=SZ;
+  const ctx=canvas.getContext('2d');
+  ctx.imageSmoothingEnabled=false;
+  const cx=SZ/2, cy=SZ/2, r=SZ/2-2;
+  for (let py=0; py<SZ; py+=PX) {
+    for (let px=0; px<SZ; px+=PX) {
+      const pcx=px+PX/2, pcy=py+PX/2;
+      const d=Math.sqrt((pcx-cx)**2+(pcy-cy)**2);
+      if (d>r) continue;
+      const hi=pcx<cx-2&&pcy<cy-2&&d<r*0.48;
+      const edge=d/r>0.74;
+      ctx.fillStyle=hi?c.light:edge?c.dark:c.main;
+      ctx.fillRect(px,py,PX,PX);
+    }
+  }
+}
+
+function newRound() {
+  const pool=shuffle(COLORS).slice(0,9);
+  currentTarget=pool[Math.floor(Math.random()*9)];
+  dotColors=pool;
+  roundStart=performance.now();
+  if (state==='game') renderGame();
+}
+
+function startGame() {
+  state='game'; timeLeft=60; reactionTimes=[]; errors=0; totalClicks=0;
+  timerInterval=setInterval(()=>{
+    timeLeft-=0.1;
+    if (timeLeft<=0) { timeLeft=0; clearInterval(timerInterval); state='result'; render(); return; }
+    const pct=timeLeft/60*100;
+    const tf=document.getElementById('tf'), tv=document.getElementById('tv');
+    if (tf) { tf.style.width=pct+'%'; tf.className='t-fill'+(pct<17?' danger':pct<34?' warn':''); }
+    if (tv) tv.textContent=formatTime(timeLeft);
+    const sc=document.getElementById('sc'), ec=document.getElementById('ec');
+    if (sc) sc.textContent=reactionTimes.length;
+    if (ec) ec.textContent=errors;
+  }, 100);
+  newRound();
+}
+
+function handleClick(idx) {
+  if (state!=='game') return;
+  totalClicks++;
+  const clicked=dotColors[idx];
+  const c=document.querySelectorAll('canvas.pc')[idx];
+  if (clicked.name===currentTarget.name) {
+    reactionTimes.push(performance.now()-roundStart);
+    showToast('ok');
+    if(c){c.classList.remove('wrong-shake');c.classList.add('correct-flash');setTimeout(()=>c&&c.classList.remove('correct-flash'),300);}
+    setTimeout(newRound,80);
+  } else {
+    errors++;
+    showToast('ng');
+    if(c){c.classList.remove('correct-flash');c.classList.add('wrong-shake');setTimeout(()=>c&&c.classList.remove('wrong-shake'),350);}
+  }
+}
+
+function renderIntro() {
+  app.innerHTML=`
+    <div class="card" style="text-align:center;">
+      <div class="section-lbl">START GAME</div>
+      <div class="card-title">반응속도형<br>테스트</div>
+      <div class="card-sub">글자의 색상과 같은 원을 선택하세요</div>
+      <div class="info-table">
+        <div class="info-row"><span class="ik">설명</span><span class="iv">얼마나 빠르게 반응하는가</span></div>
+        <div class="info-row"><span class="ik">측정</span><span class="iv">반응속도 · 정확도 · 정답수</span></div>
+        <div class="info-row"><span class="ik">시간</span><span class="iv">1분</span></div>
+      </div>
+      <div class="guide-box" style="text-align:left;">
+        <div class="guide-ttl">점수 기준 (100점 만점)</div>
+        <div class="guide-row"><span class="g-name">반응속도</span><span class="g-pt">40pt</span></div>
+        <div class="guide-row"><span class="g-name">정확도</span><span class="g-pt">40pt</span></div>
+        <div class="guide-row"><span class="g-name">정답수</span><span class="g-pt">20pt</span></div>
+      </div>
+      <button class="btn-main" onclick="startGame()">▶ START</button>
+    </div>`;
+}
+
+function renderGame() {
+  const pct=timeLeft/60*100;
+  const fillCls='t-fill'+(pct<17?' danger':pct<34?' warn':'');
+  const best=reactionTimes.length?Math.round(Math.min(...reactionTimes)):null;
+  app.innerHTML=`
+    <div class="card">
+      <div class="timer-row">
+        <span class="t-lbl">TIME LEFT</span>
+        <span class="t-val" id="tv">${formatTime(timeLeft)}</span>
+      </div>
+      <div class="t-track"><div class="${fillCls}" id="tf" style="width:${pct}%"></div></div>
+      <div class="prompt-wrap">
+        <span class="prompt-color" id="pt"></span>
+        <span class="prompt-guide">을 클릭하세요</span>
+      </div>
+      <div class="dot-grid" id="dg"></div>
+      <div class="live-row">
+        <div class="live-item"><div class="live-lbl">정답</div><div class="live-val" id="sc">${reactionTimes.length}</div></div>
+        <div class="live-item"><div class="live-lbl">오답</div><div class="live-val" id="ec">${errors}</div></div>
+        <div class="live-item"><div class="live-lbl">최고속도</div><div class="live-val" style="font-size:14px;">${best?best+'ms':'-'}</div></div>
+      </div>
+    </div>`;
+  const pt=document.getElementById('pt');
+  if(pt){pt.textContent=currentTarget.name;pt.style.color=currentTarget.main;pt.style.textShadow=`3px 3px 0 ${currentTarget.dark}`;}
+  const grid=document.getElementById('dg');
+  if(grid){
+    dotColors.forEach((c,i)=>{
+      const cell=document.createElement('div');
+      cell.className='dot-cell';
+      const cv=document.createElement('canvas');
+      cv.className='pc';
+      drawDot(cv,c);
+      cell.onclick=()=>handleClick(i);
+      cell.appendChild(cv);
+      grid.appendChild(cell);
+    });
+  }
+}
+
+function renderResult() {
+  const avg=reactionTimes.length?Math.round(reactionTimes.reduce((a,b)=>a+b,0)/reactionTimes.length):999;
+  const errorRate=totalClicks>0?Math.round(errors/totalClicks*100):0;
+  const correct=reactionTimes.length;
+  const best=reactionTimes.length?Math.round(Math.min(...reactionTimes)):0;
+  const {speedScore,accScore,countScore,total}=calcScore(avg,errorRate,correct);
+  const {label,color}=gradeInfo(total);
+  app.innerHTML=`
+    <div class="card" style="text-align:center;">
+      <div class="r-tag">RESULT</div>
+      <div class="r-score-lbl">TOTAL  SCORE</div>
+      <div class="r-score" style="color:${color};text-shadow:4px 4px 0 #060810,7px 7px 0 #060810;">${total}</div>
+      <div class="r-grade" style="color:${color};">${label}</div>
+      <div class="r-sub">/ 100점 만점</div>
+      <div class="detail-box" style="text-align:left;">
+        <div class="detail-ttl">점수 세부 내역</div>
+        <div class="bar-row">
+          <div class="bar-lbl">반응속도</div>
+          <div class="bar-track"><div class="bar-fill" id="b1" style="width:0%;background:repeating-linear-gradient(90deg,#f5d600 0,#f5d600 8px,#8a7000 8px,#8a7000 12px);"></div></div>
+          <div class="bar-score">${speedScore}/40</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-lbl">정확도</div>
+          <div class="bar-track"><div class="bar-fill" id="b2" style="width:0%;background:repeating-linear-gradient(90deg,#4c6ef5 0,#4c6ef5 8px,#2340c0 8px,#2340c0 12px);"></div></div>
+          <div class="bar-score">${accScore}/40</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-lbl">정답수</div>
+          <div class="bar-track"><div class="bar-fill" id="b3" style="width:0%;background:repeating-linear-gradient(90deg,#22c55e 0,#22c55e 8px,#15803d 8px,#15803d 12px);"></div></div>
+          <div class="bar-score">${countScore}/20</div>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="m-box"><div class="m-lbl">평균<br>반응속도</div><div class="m-val">${avg}<span class="m-unit">ms</span></div></div>
+        <div class="m-box"><div class="m-lbl">오답률</div><div class="m-val">${errorRate}<span class="m-unit">%</span></div></div>
+        <div class="m-box"><div class="m-lbl">총<br>정답수</div><div class="m-val">${correct}<span class="m-unit">개</span></div></div>
+      </div>
+      <div class="best-row">
+        <span class="best-lbl">최고 반응속도</span>
+        <span class="best-val">${best} ms</span>
+      </div>
+      <button class="btn-main" onclick="retry()">▶ RETRY</button>
+      <button class="btn-sub" onclick="goIntro()">처음으로</button>
+    </div>`;
+  setTimeout(()=>{
+    const b1=document.getElementById('b1'),b2=document.getElementById('b2'),b3=document.getElementById('b3');
+    if(b1)b1.style.width=(speedScore/40*100)+'%';
+    if(b2)b2.style.width=(accScore/40*100)+'%';
+    if(b3)b3.style.width=(countScore/20*100)+'%';
+  },80);
+}
+
+function retry()   { clearInterval(timerInterval); startGame(); }
+function goIntro() { clearInterval(timerInterval); state='intro'; render(); }
+function render() {
+  if(state==='intro') renderIntro();
+  else if(state==='game') renderGame();
+  else if(state==='result') renderResult();
+}
+render();
+</script>
+</body>
+</html>
