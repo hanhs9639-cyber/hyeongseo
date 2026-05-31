@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>공부 환경 테스트</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/galmuri/dist/galmuri.css" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --eng: 'Press Start 2P', monospace;
+  --kor: 'Galmuri11', 'Press Start 2P', monospace;
+  --bg:   #0b0f1e;
+  --surf: #131828;
+  --deep: #0e1322;
+  --bd:   #1e2d52;
+  --blue: #4c6ef5;
+  --blu2: #2340c0;
+  --grn:  #22c55e;
+  --grn2: #15803d;
+  --yel:  #f5d600;
+  --yel2: #8a7000;
+  --text: #e8edf8;
+  --dim:  #4a6acc;
+  --sky:  #93c5fd;
+}
+body {
+  font-family: var(--kor);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+#app { width: 100%; max-width: 480px; }
+
+.card {
+  background: var(--surf);
+  border: 2px solid var(--bd);
+  padding: 28px 24px 34px;
+  box-shadow: 4px 4px 0 #060810;
+}
+
+.section-lbl {
+  font-family: var(--eng);
+  font-size: 9px;
+  color: var(--yel);
+  letter-spacing: 0.12em;
+  margin-bottom: 8px;
+}
+.card-title {
+  font-family: var(--kor);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  text-shadow: 3px 3px 0 #060810;
+  line-height: 1.7;
+  margin-bottom: 8px;
+}
+.card-sub {
+  font-family: var(--kor);
+  font-size: 13px;
+  color: var(--sky);
+  margin-bottom: 22px;
+  line-height: 1.9;
+}
+
+.info-table { border: 2px solid var(--bd); margin-bottom: 20px; }
+.info-row   { display: flex; gap: 10px; padding: 10px 14px; border-bottom: 2px solid var(--bd); }
+.info-row:last-child { border-bottom: none; }
+.ik { font-family: var(--kor); font-size: 12px; color: var(--dim); width: 36px; flex-shrink: 0; line-height: 1.8; }
+.iv { font-family: var(--kor); font-size: 12px; color: #c8d0f0; line-height: 1.8; }
+
+.prog-wrap { margin-bottom: 22px; }
+.prog-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.prog-lbl  { font-family: var(--eng); font-size: 9px; color: var(--dim); letter-spacing: .1em; }
+.prog-pct  { font-family: var(--eng); font-size: 9px; color: var(--yel); text-shadow: 1px 1px 0 var(--yel2); }
+.prog-track { height: 10px; background: var(--deep); border: 2px solid var(--bd); overflow: hidden; }
+.prog-fill  { height: 100%;
+  background: repeating-linear-gradient(90deg, var(--blue) 0, var(--blue) 8px, var(--blu2) 8px, var(--blu2) 12px);
+  transition: width .4s cubic-bezier(.4,0,.2,1); }
+
+.q-lbl  { font-family: var(--eng); font-size: 9px; color: var(--dim); letter-spacing: .1em; margin-bottom: 10px; }
+.q-text { font-family: var(--kor); font-size: 17px; font-weight: 700; color: var(--text); text-shadow: 2px 2px 0 #060810; line-height: 1.7; margin-bottom: 18px; }
+
+.options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+
+.opt {
+  background: var(--deep);
+  border: 2px solid var(--bd);
+  padding: 14px 12px;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: 3px 3px 0 #060810;
+  transition: transform .08s, box-shadow .08s, border-color .1s;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.opt:hover { border-color: var(--blue); }
+.opt:active { transform: translate(3px,3px); box-shadow: none; }
+.opt.sel {
+  border-color: var(--yel);
+  background: #161c35;
+  box-shadow: 3px 3px 0 var(--yel2);
+}
+.opt-label { font-family: var(--kor); font-size: 13px; color: var(--text); line-height: 1.5; }
+.opt-sub   { font-family: var(--kor); font-size: 11px; color: var(--dim); line-height: 1.5; }
+.opt.sel .opt-label { color: var(--yel); }
+
+.nav { display: flex; justify-content: space-between; align-items: center; }
+
+.btn-main {
+  display: block; width: 100%;
+  background: var(--blue); color: #fff;
+  font-family: var(--eng); font-size: 11px; text-align: center;
+  padding: 16px 0; border: none;
+  box-shadow: 0 5px 0 var(--blu2), 3px 3px 0 var(--blu2);
+  cursor: pointer; letter-spacing: 0.1em;
+  transition: transform .08s, box-shadow .08s;
+}
+.btn-main:hover { background: #5c7ef7; }
+.btn-main:active { transform: translate(3px,5px); box-shadow: none; }
+.btn-main:disabled { opacity: .28; cursor: not-allowed; transform: none; }
+
+.btn-back {
+  background: transparent; color: var(--sky);
+  font-family: var(--kor); font-size: 13px;
+  padding: 10px 16px; border: 2px solid var(--bd);
+  box-shadow: 0 3px 0 #0a0d18, 2px 2px 0 #0a0d18;
+  cursor: pointer;
+  transition: transform .08s, box-shadow .08s;
+}
+.btn-back:active { transform: translate(2px,3px); box-shadow: none; }
+.btn-back.hide { visibility: hidden; pointer-events: none; }
+
+.btn-next {
+  background: var(--blue); color: #fff;
+  font-family: var(--eng); font-size: 10px;
+  padding: 12px 20px; border: none;
+  box-shadow: 0 4px 0 var(--blu2), 3px 3px 0 var(--blu2);
+  cursor: pointer; letter-spacing: .08em;
+  transition: transform .08s, box-shadow .08s;
+}
+.btn-next:hover { background: #5c7ef7; }
+.btn-next:active { transform: translate(3px,4px); box-shadow: none; }
+.btn-next:disabled { opacity: .28; cursor: not-allowed; transform: none !important; box-shadow: 0 4px 0 var(--blu2), 3px 3px 0 var(--blu2) !important; }
+
+.step { display: none; }
+.step.active { display: block; animation: fadeIn .25s ease; }
+@keyframes fadeIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: translateY(0); } }
+
+.r-tag {
+  display: inline-block; background: var(--blue); color: #fff;
+  font-family: var(--eng); font-size: 10px; padding: 7px 18px;
+  box-shadow: 0 3px 0 var(--blu2), 2px 2px 0 var(--blu2);
+  margin-bottom: 14px; letter-spacing: .12em;
+}
+
+.res-place {
+  font-family: var(--kor); font-size: 22px; font-weight: 700;
+  color: var(--yel); text-shadow: 3px 3px 0 var(--yel2), 5px 5px 0 #060810;
+  line-height: 1.7; margin-bottom: 10px;
+}
+.res-reason {
+  font-family: var(--kor); font-size: 13px; color: var(--sky);
+  line-height: 1.9; margin-bottom: 22px;
+}
+
+.detail-box { background: var(--deep); border: 2px solid var(--bd); padding: 14px 16px; margin-bottom: 14px; }
+.detail-ttl { font-family: var(--kor); font-size: 12px; color: var(--dim); margin-bottom: 12px; }
+.sum-row {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 8px 0; border-bottom: 1px solid #1a2240; gap: 12px;
+}
+.sum-row:last-child { border-bottom: none; }
+.sum-q { font-family: var(--kor); font-size: 12px; color: var(--dim); flex-shrink: 0; }
+.sum-a { font-family: var(--kor); font-size: 12px; color: var(--sky); text-align: right; }
+
+.sound-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 18px; }
+.sound-card { background: var(--deep); border: 2px solid var(--bd); padding: 12px 14px; box-shadow: 2px 2px 0 #060810; }
+.sound-name { font-family: var(--kor); font-size: 13px; color: var(--grn); text-shadow: 1px 1px 0 var(--grn2); }
+.sound-ex   { display: none; }
+
+.no-sound {
+  font-family: var(--kor); font-size: 13px; color: var(--dim);
+  background: var(--deep); border: 2px solid var(--bd);
+  padding: 14px 16px; line-height: 1.9; margin-bottom: 18px;
+}
+
+.btn-sub {
+  display: block; width: 100%;
+  background: transparent; color: var(--sky);
+  font-family: var(--kor); font-size: 14px; text-align: center;
+  padding: 13px 0; border: 2px solid var(--bd);
+  box-shadow: 0 4px 0 #0a0d18, 3px 3px 0 #0a0d18;
+  cursor: pointer; margin-top: 10px;
+  transition: transform .08s, box-shadow .08s;
+}
+.btn-sub:active { transform: translate(3px,4px); box-shadow: none; }
+
+.pixel-cursor { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Crect x='0' y='0' width='4' height='4' fill='%23f5d600'/%3E%3Crect x='4' y='4' width='4' height='4' fill='%23f5d600'/%3E%3Crect x='8' y='8' width='4' height='4' fill='%23f5d600'/%3E%3C/svg%3E") 0 0, pointer; }
+
+@media (max-width: 420px) {
+  .options { grid-template-columns: 1fr; }
+  .sound-grid { grid-template-columns: 1fr; }
+  .card { padding: 20px 16px 26px; }
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const Qs = [
+  {q:'주로 어떤 공부를 하시나요?', opts:[
+    {l:'시험 공부', s:'암기·문제풀이 중심'},
+    {l:'팀플 작업', s:'협업·발표 준비'},
+    {l:'학교 과제', s:'리포트·글쓰기'},
+    {l:'자기계발', s:'자격증·코딩·어학'}
+  ]},
+  {q:'공부 공간 선택의 가장 중요한 요소는?', opts:[
+    {l:'조용함', s:'소음 없는 환경'},
+    {l:'분위기', s:'공간의 감성·무드'},
+    {l:'편한 의자·책상', s:'몸이 편해야 집중'},
+    {l:'사람들의 존재감', s:'적당한 긴장·자극'}
+  ]},
+  {q:'집중이 가장 잘됐던 순간의 분위기는?', opts:[
+    {l:'조용하고 안정적', s:'혼자만의 고요한 시간'},
+    {l:'긴장감 있는 분위기', s:'데드라인·시험장 느낌'},
+    {l:'적당히 활기찬', s:'카페·도서관 웅성임'},
+    {l:'완전히 몰입되는', s:'게임처럼 빠져드는 상태'}
+  ]},
+  {q:'공부할 때 배경음이 있나요?', opts:[
+    {l:'완전 무음', s:'소리가 있으면 안 됨'},
+    {l:'자연음·백색소음', s:'빗소리, 파도, 바람'},
+    {l:'잔잔한 음악', s:'로파이·클래식·재즈'},
+    {l:'가사 있는 음악', s:'노래 들으며도 집중 가능'}
+  ]}
+];
+const LABELS = ['공부 유형','중요한 환경 요소','집중 잘 됐던 분위기','배경 소리'];
+const ans = [null,null,null,null];
+const SPACES = ['집','도서관','카페','스터디카페'];
+const SCORE = [
+  [[1,0,1,2],[2,1,1,1],[0,2,2,0],[2,1,1,1]],
+  [[2,1,2,0],[2,0,1,1],[1,1,2,0],[0,2,0,2]],
+  [[3,2,0,1],[0,2,1,1],[0,1,3,1],[2,1,1,2]],
+  [[2,1,1,1],[2,1,0,1],[1,1,2,1],[1,0,2,3]]
+];
+const REASONS = {
+  '집':'통제된 환경에서 나만의 루틴으로 집중하는 타입. 방해 요소를 직접 조절할 수 있어 딥워크에 유리해요.',
+  '도서관':'조용하고 적당한 긴장감이 있는 공간에서 실력을 발휘하는 타입. 무음에 가까운 환경이 집중력을 극대화해요.',
+  '카페':'주변의 활기찬 분위기에서 에너지를 얻는 타입. 카페 소음이 오히려 창의성과 집중력을 높여줘요.',
+  '스터디카페':'적당한 긴장감과 쾌적한 환경 세팅으로 몰입을 이끌어내는 타입. 시설과 분위기 둘 다 챙기는 현실주의자.'
+};
+const SOUNDS = {
+  '집':{
+    '완전 무음': null,
+    '자연음·백색소음': [{n:'빗소리 (실내)',e:''}],
+    '잔잔한 음악': [{n:'앰비언트 음악',e:''}],
+    '가사 있는 음악': [{n:'잔잔한 인디팝',e:''}]
+  },
+  '도서관':{
+    '완전 무음': null,
+    '자연음·백색소음': [{n:'도서관 앰비언스',e:''}],
+    '잔잔한 음악': [{n:'로파이 힙합',e:''}],
+    '가사 있는 음악': [{n:'가사 있는 팝 (저볼륨)',e:''}]
+  },
+  '카페':{
+    '완전 무음': null,
+    '자연음·백색소음': [{n:'카페 앰비언스',e:''}],
+    '잔잔한 음악': [{n:'보사노바',e:''}],
+    '가사 있는 음악': [{n:'팝 플레이리스트',e:''}]
+  },
+  '스터디카페':{
+    '완전 무음': null,
+    '자연음·백색소음': [{n:'브라운노이즈',e:''}],
+    '잔잔한 음악': [{n:'로파이 칠합',e:''}],
+    '가사 있는 음악': [{n:'팝 + 집중 모드',e:''}]
+  }
+};
+
+let curStep = 0;
+
+function renderIntro() {
+  document.getElementById('app').innerHTML = `
+    <div class="card" style="text-align:center;">
+      <div class="section-lbl">STUDY ENV TEST</div>
+      <div class="card-title">공부 환경<br>추천 테스트</div>
+      <div class="card-sub">4가지 질문으로 나에게 딱 맞는<br>공부 공간과 배경음을 찾아보세요</div>
+      <div class="info-table">
+        <div class="info-row"><span class="ik">질문</span><span class="iv">총 4문항</span></div>
+        <div class="info-row"><span class="ik">결과</span><span class="iv">공부 공간 추천 + 배경음 추천</span></div>
+        <div class="info-row"><span class="ik">시간</span><span class="iv">약 1분</span></div>
+      </div>
+      <button class="btn-main pixel-cursor" onclick="renderStep(0)">▶ START</button>
+    </div>`;
+}
+
+function renderStep(idx) {
+  curStep = idx;
+  const q = Qs[idx];
+  const pct = Math.round(((idx + 1) / 5) * 100);
+  const optsHTML = q.opts.map((o, i) => `
+    <button class="opt pixel-cursor${ans[idx]===i?' sel':''}" onclick="sel(${idx},${i})">
+      <span class="opt-label">${ans[idx]===i ? '▶ ' : ''}${o.l}</span>
+      <span class="opt-sub">${o.s}</span>
+    </button>`).join('');
+
+  document.getElementById('app').innerHTML = `
+    <div class="card">
+      <div class="prog-wrap">
+        <div class="prog-meta">
+          <span class="prog-lbl">QUESTION ${idx+1} / 4</span>
+          <span class="prog-pct">${pct}%</span>
+        </div>
+        <div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div class="q-lbl">Q${idx+1}.</div>
+      <div class="q-text">${q.q}</div>
+      <div class="options">${optsHTML}</div>
+      <div class="nav">
+        <button class="btn-back pixel-cursor${idx===0?' hide':''}" onclick="renderStep(${idx-1})">◀ 이전</button>
+        <button class="btn-next pixel-cursor" id="btnNext" onclick="${idx===3?'showRes()':'renderStep('+(idx+1)+')'}" ${ans[idx]===null?'disabled':''}>
+          ${idx===3?'RESULT ▶':'NEXT ▶'}
+        </button>
+      </div>
+    </div>`;
+}
+
+function sel(qIdx, optIdx) {
+  ans[qIdx] = optIdx;
+  renderStep(qIdx);
+}
+
+function showRes() {
+  const scores = [0,0,0,0];
+  for(let q=0;q<4;q++){
+    if(ans[q]===null) continue;
+    for(let sp=0;sp<4;sp++) scores[sp] += SCORE[q][sp][ans[q]];
+  }
+  const max = Math.max(...scores);
+  const winners = SPACES.filter((_,i) => scores[i]===max);
+  const primary = winners[0];
+  const soundKey = ans[3]!==null ? Qs[3].opts[ans[3]].l : null;
+  const soundData = soundKey && SOUNDS[primary] ? SOUNDS[primary][soundKey] : null;
+
+  const soundHTML = !soundData
+    ? `<div class="section-lbl" style="margin-bottom:8px;">SOUND REC</div>
+       <div class="no-sound">무음 환경 선호 타입이에요.<br>이어플러그나 노이즈캔슬링 헤드폰으로<br>외부 소음을 완전히 차단해보세요.</div>`
+    : `<div class="section-lbl" style="margin-bottom:8px;">SOUND REC</div>
+       <div class="sound-grid">${soundData.map(s=>`
+        <div class="sound-card">
+          <div class="sound-name">▶ ${s.n}</div>
+          <div class="sound-ex">${s.e}</div>
+        </div>`).join('')}</div>`;
+
+  const summaryHTML = LABELS.map((lbl,i)=>`
+    <div class="sum-row">
+      <span class="sum-q">${lbl}</span>
+      <span class="sum-a">${ans[i]!==null?Qs[i].opts[ans[i]].l:'-'}</span>
+    </div>`).join('');
+
+  document.getElementById('app').innerHTML = `
+    <div class="card" style="text-align:center;">
+      <div class="r-tag">RESULT</div>
+      <div class="res-place">${winners.join(' / ')}<br>추천</div>
+      <div class="res-reason">${winners.map(p=>REASONS[p]).join('<br>')}</div>
+      <div class="detail-box" style="text-align:left;">
+        <div class="detail-ttl">▌ 내 답변 요약</div>
+        ${summaryHTML}
+      </div>
+      <div style="text-align:left;">${soundHTML}</div>
+      <button class="btn-main pixel-cursor" onclick="restart()">▶ 다시 하기</button>
+      <button class="btn-sub pixel-cursor" onclick="renderIntro()">처음으로</button>
+    </div>`;
+}
+
+function restart() {
+  ans.fill(null);
+  renderStep(0);
+}
+
+renderIntro();
+</script>
+</body>
+</html>
